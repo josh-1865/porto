@@ -4,12 +4,10 @@ namespace App\Providers;
 
 use App\Models\Core;
 use App\Models\Maintenance;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\QueryException;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         try {
-            // Attempt DB connection
+            // Check if the database is reachable
             DB::connection()->getPdo();
 
             if (Schema::hasTable('settings')) {
@@ -45,9 +43,9 @@ class AppServiceProvider extends ServiceProvider
                     'header_core' => $data->header ?? false,
                 ]);
             }
-        } catch (QueryException $e) {
-            // Log and silently fail if DB is not ready (e.g., during deployment)
-            Log::warning('Skipping DB-dependent boot logic: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            // Prevent crash during package discovery or deployment
+            Log::warning('AppServiceProvider boot skipped due to DB error: ' . $e->getMessage());
         }
     }
 }
