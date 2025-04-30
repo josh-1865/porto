@@ -132,14 +132,23 @@ class AdminPanelProvider extends PanelProvider
             ]);
     }
 
-    private function getSetting()
-    {
-        if (Schema::hasTable('settings')) {
-            $setting = Setting::first(['id']);
-
-            return $setting ? $setting->value('id') : null;
-        }
-
+   private function getSetting()
+{
+    if (!app()->runningInConsole() || app()->runningUnitTests()) {
         return null;
     }
+
+    try {
+        if (Schema::hasTable('settings')) {
+            $setting = Setting::first(['id']);
+            return $setting ? $setting->value('id') : null;
+        }
+    } catch (\Exception $e) {
+        // Optionally log this if needed: Log::warning($e->getMessage());
+        return null;
+    }
+
+    return null;
+}
+
 }
