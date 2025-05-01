@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
             ->hasProfile()
             ->create([
                 'name'  => 'Warriorfolio',
-                'email' => 'warriorfolio@test.dev',
+                'email' => 'jameslin1865@gmail.com',
             ]);
         Setting::factory()
             ->hasLayout()
